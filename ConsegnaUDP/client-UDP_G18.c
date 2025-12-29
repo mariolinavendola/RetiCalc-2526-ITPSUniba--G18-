@@ -14,9 +14,22 @@ int main() {
     SOCKET clientSock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 
     struct sockaddr_in serverAddr;
+    char nomeServer[100];
+    struct hostent *host;
+
+    printf("Inserisci il nome del server: ");
+    scanf("%s", nomeServer);
+
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_port = htons(PORTA);
-    serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+
+    host = gethostbyname(nomeServer);
+    if (host == NULL) {
+        closesocket(clientSock);
+        WSACleanup();
+        return -1;
+    }
+    memcpy(&serverAddr.sin_addr, host->h_addr, host->h_length);
 
     char lettera;
     int num1, num2;
